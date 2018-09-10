@@ -50,9 +50,25 @@ app.get('/todas/:id',(req,res)=>{
     });
 });
 
+//---------------------Delete----------------------------
+app.delete('/todas/:id',(req,res)=>{
+    var id = req.params.id;
+
+    if(!ObjectID.isValid(id)){
+        return res.status(404).send();
+    }
+    Toda.findByIdAndRemove(id).then((toda)=>{
+        if(!toda){
+            return res.status(404).send();
+        }
+        res.status(200).send(toda);
+    }).catch((e)=>{
+        res.status(404).send();
+    });
+});
 //------------------PORT-Listener---------------------------------
 app.listen(3000,()=>{
-    console.log(`Started up at port ${port}`);
+    console.log('Started up at port 3000');
 });
 
 module.exports={app};
