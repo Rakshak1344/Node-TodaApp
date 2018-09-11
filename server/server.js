@@ -1,7 +1,8 @@
 //global module
-var express = require('express');
-var bodyParser = require('body-parser');
-var {ObjectID}=require('mongodb');
+const _=require('lodash');
+const express = require('express');
+const bodyParser = require('body-parser');
+const {ObjectID}=require('mongodb');
 //local module
 var {mongoose}=require('./db/mongoose');
 var {Toda}= require('./models/toda');
@@ -65,6 +66,33 @@ app.delete('/todas/:id',(req,res)=>{
     }).catch((e)=>{
         res.status(404).send();
     });
+});
+
+//---------------patchMethod-Update------------------------------
+app.patch('/todas/:id',(req,res)=>{
+    var id = req.params.id;
+    var body = _.pick(req.body,['text','completed']);
+    
+    if(!ObjectID.isValid(id)){
+        return res.status(404).send();
+    }
+
+    if(_.isBoolean(body.completed)&& body.completed){
+        body.completedAt = new Date().getTime();
+    }else{
+        body.completed =false;
+        body.completedAt=null;
+    }
+
+    Toda.findByIdAndUpdate(id,{$set: body},{new: true}).then((toda)=>{
+        if(!toda){
+            return res.status(404).send();
+        }
+        res.send({toda});
+    }).catch((e)=>{
+        res.status(404).send();
+    });
+
 });
 //------------------PORT-Listener---------------------------------
 app.listen(3000,()=>{
