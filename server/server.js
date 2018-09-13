@@ -113,7 +113,7 @@ app.patch('/todas/:id',(req,res)=>{
 app.post('/users',(req,res)=>{
     var body= _.pick(req.body,['email','password']);
     var user = new User(body);
-    
+    //under users.js [generateAuthToken()]
     user.save().then(()=>{
        return user.generateAuthToken();
     }).then((token)=>{
@@ -124,7 +124,7 @@ app.post('/users',(req,res)=>{
     
 });
 
-//authenticate
+//middleware /authenticate
 app.get('/users/me',authenticate,(req,res)=>{
    res.send(req.user);
     // var token =req.header('x-auth');
@@ -141,8 +141,9 @@ app.get('/users/me',authenticate,(req,res)=>{
 
 app.post('/users/login',(req,res)=>{
     var body=_.pick(req.body,['email','password']);
+    //under users.js [findByCredentials()]
     User.findByCredentials(body.email,body.password).then((user)=>{
-        // res.send(user);
+       //under users.js [generateAuthToken()]
         user.generateAuthToken().then((token)=>{
             res.header('x-auth',token).send(user);
         })
@@ -151,7 +152,14 @@ app.post('/users/login',(req,res)=>{
     });
 });
 
+app.delete('/users/me/token',authenticate,(req,res)=>{
 
+    req.user.removeToken(req.token).then(()=>{  
+        res.status(200).send();
+    },()=>{
+        res.status(400).send();
+    });
+});
 
 //------------------PORT-Listener---------------------------------
 app.listen(port,()=>{
