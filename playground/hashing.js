@@ -1,16 +1,31 @@
-
+const {SHA256}= require('crypto-js');
 //-------JWT------------------------------
 const jwt = require('jsonwebtoken');
-var data = {
-    id:10
-};
-var token=jwt.sign(data,'123abc');
-console.log(token);
+const bcrypt = require('bcryptjs');
 
-var decoded = jwt.verify(token,'123abc');
-console.log('decoded',decoded);
-//--------------CRYPTO-JS----------------------
-// const {SHA256}= require('crypto-js');
+var password = '123abc';
+
+// bcrypt.genSalt(10,(err,salt)=>{
+//     bcrypt.hash(password,salt,(err,hash)=>{
+//         console.log(hash);
+//     });
+// });
+
+var hashedPassword = '$2a$10$zC/WIM1cTurbahbN6e2c2eHzhCoCDxhJX/5yxOv3luMurfJdZa4rq';
+bcrypt.compare(password,hashedPassword,(err,res)=>{
+    console.log(res);
+});
+
+// var data = {
+//     id:10
+// };
+// var token=jwt.sign(data,'123abc');
+// console.log(token);
+
+// var decoded = jwt.verify(token,'123abc');
+// console.log('decoded',decoded);
+// //--------------CRYPTO-JS----------------------
+// 
 // var message = 'I am User no 10';
 
 // var hash =SHA256(message).toString();
